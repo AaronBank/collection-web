@@ -1,3 +1,10 @@
+/*
+ * @Author: Aaron
+ * @Date: 2019-11-05 14:50:57
+ * @LastEditors: Aaron
+ * @LastEditTime: 2019-11-05 16:23:14
+ * @Description: file content
+ */
 module.exports = {
   root: true,
   env: {
@@ -19,5 +26,6 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+    "prettier/prettier": "off"
   }
 }

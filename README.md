@@ -1,6 +1,6 @@
 # collection-web
 
-> My breathtaking Nuxt.js project
+> My funkadelic Nuxt.js project
 
 ## Build Setup
 

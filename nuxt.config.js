@@ -14,7 +14,10 @@ export default {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      { rel: 'stylesheet', href: 'https://at.alicdn.com/t/font_1493814_wsecoxvhgyf.css' }
+    ]
   },
   /*
    ** Customize the progress-bar color
@@ -23,11 +26,11 @@ export default {
   /*
    ** Global CSS
    */
-  css: ['iview/dist/styles/iview.css'],
+  css: ['element-ui/lib/theme-chalk/index.css'],
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/iview'],
+  plugins: ['@/plugins/element-ui'],
   /*
    ** Nuxt.js dev-modules
    */
@@ -52,6 +55,7 @@ export default {
    ** Build configuration
    */
   build: {
+    transpile: [/^element-ui/],
     /*
      ** You can extend webpack config here
      */
