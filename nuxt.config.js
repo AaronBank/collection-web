@@ -14,6 +14,9 @@ export default {
         content: process.env.npm_package_description || ''
       }
     ],
+    script: [
+      { src: 'https://at.alicdn.com/t/font_1493814_wsecoxvhgyf.js' }
+    ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
       { rel: 'stylesheet', href: 'https://at.alicdn.com/t/font_1493814_wsecoxvhgyf.css' }

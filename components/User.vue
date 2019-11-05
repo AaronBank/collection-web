@@ -1,31 +1,24 @@
-<!--
- * @Author: Aaron
- * @Date: 2019-11-05 14:55:41
- * @LastEditors: Aaron
- * @LastEditTime: 2019-11-05 19:12:12
- * @Description: file content
- -->
 <template>
-  <el-dialog :visible.sync="dialogVisible" width="30%" center>
+  <el-dialog :visible.sync="visible" width="460px" center @closed="closed">
     <div slot="title" class="container">
       <img class="icon" src="/icon.png" alt="图标" />
-      <el-button type="text" :disabled="isLogin" @click="toggle"
-        >登 陆</el-button
-      >
-      <el-divider direction="vertical"></el-divider>
+      <el-button type="text" :disabled="isLogin" @click="toggle">登 陆</el-button>
+      <el-divider direction="vertical"/>
       <el-button type="text" :disabled="!isLogin" @click="toggle">注 册</el-button>
     </div>
-    <el-form v-if="isLogin" :model="form">
-      <el-form-item>
+    <el-form ref="form" :model="form" :rules="rules" :validate-on-rule-change="false">
+      <el-form-item prop="username">
         <el-input
+          :key="isLogin ? 'login':'aaa'"
           v-model="form.username"
           prefix-icon="el-icon-user"
           autocomplete="off"
-          placeholder="请输入用户名"
+          placeholder="请输入邮箱"
         />
       </el-form-item>
-      <el-form-item>
+      <el-form-item prop="password">
         <el-input
+          :key="isLogin ? 'login':'aaa'"
           v-model="form.password"
           type="password"
           prefix-icon="el-icon-unlock"
@@ -33,53 +26,54 @@
           placeholder="请输入密码"
         />
       </el-form-item>
-    </el-form>
-    <el-form v-else :model="form">
-      <el-form-item>
-        <el-input
-          v-model="form.username"
-          prefix-icon="el-icon-user"
-          autocomplete="off"
-          placeholder="请输入用户名"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-input
-          v-model="form.password"
-          type="password"
-          prefix-icon="el-icon-unlock"
-          autocomplete="off"
-          placeholder="请输入密码"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-input
-          v-model="form.password"
-          type="password"
-          prefix-icon="el-icon-unlock"
-          autocomplete="off"
-          placeholder="再次输入密码"
-        />
-      </el-form-item>
+      <div v-if="!isLogin">
+        <el-form-item prop="againPassword">
+          <el-input
+            v-model="form.againPassword"
+            type="password"
+            prefix-icon="el-icon-unlock"
+            autocomplete="off"
+            placeholder="再次输入密码"
+          />
+        </el-form-item>
+        <el-form-item prop="code">
+          <el-input
+            v-model="form.code"
+            prefix-icon="el-icon-key"
+            autocomplete="off"
+            placeholder="请输入邮箱验证码"
+          >
+            <el-button slot="append" type="primary">获取验证码</el-button>
+          </el-input>
+        </el-form-item>
+      </div>
     </el-form>
     <el-button v-if="isLogin" size="mini" type="text" class="forgot-password">忘记密码？</el-button>
     <span class="dialog-footer">
-      <el-button v-if="isLogin" round type="primary" @click="dialogVisible = false">登 陆</el-button>
-      <el-button v-else round type="primary" @click="dialogVisible = false">注 册</el-button>
+      <el-button v-if="isLogin" round type="primary" @click="visible = false">登 陆</el-button>
+      <el-button v-else round type="primary" @click="visible = false">注 册</el-button>
     </span>
     <span class="other">
       其他登陆方式：
       <el-tooltip class="item" effect="dark" content="微信" placement="top">
-        <em class="iconfont icon-weixin"></em>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-weixin2"></use>
+        </svg>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="QQ" placement="top">
-        <em class="iconfont icon-qq"></em>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-qq"></use>
+        </svg>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="微博" placement="top">
-        <em class="iconfont icon-weibo"></em>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-weibo"></use>
+        </svg>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="GitHub" placement="top">
-        <em class="iconfont icon-github2"></em>
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-github2"></use>
+        </svg>
       </el-tooltip>
     </span>
   </el-dialog>
@@ -88,18 +82,66 @@
 export default {
   data() {
     return {
-      dialogVisible: true,
+      visible: false,
       formLabelWidth: '120px',
       isLogin: true,
-      form: {
-        username: '',
-        password: ''
+      form: this.initForm()
+    }
+  },
+  computed: {
+    rules() {
+      const validatePass = (rule, value, callback) => {
+        if (value === '') return callback(new Error('请再次输入密码'))
+        if (value !== this.form.password) return callback(new Error('两次密码输入不一致'))
+        callback()
       }
+      const rules = {
+        username: [
+          { required: true, message: '请输入邮箱', trigger: 'blur' },
+          { pattern: /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/,  message: '请输入正确的邮箱格式', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { pattern: /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,20}$/, message: '密码包含数字,英文,字符中的两种以上，长度6-20', trigger: 'blur' }
+        ]
+      }
+
+      if (!this.isLogin) {
+        rules.againPassword = [
+          { required: true, message: '请再次输入密码', trigger: 'blur' },
+          { validator: validatePass, trigger: 'blur' }
+        ]
+        rules.code = [
+          { required: true, message: '请输邮箱验证码', trigger: 'blur' },
+          { min: 6, message: '验证码不正确', trigger: 'blur' }
+        ]
+      }
+
+      return rules
     }
   },
   methods: {
+    initForm() {
+      return {
+        username: '',
+        password: '',
+        againPassword: '',
+        code: ''
+      }
+    },
+    open() {
+      this.visible = true
+    },
+    close() {
+      this.visible = false
+    },
+    closed() {
+      this.isLogin = true
+      this.$refs.form.resetFields()
+    },
     toggle() {
       this.isLogin = !this.isLogin
+      this.$refs.form.resetFields()
     }
   }
 }
@@ -115,14 +157,25 @@ export default {
     font-size: 16px;
   }
 
+  .el-button--text{
+    color: #C0C4CC;
+  }
+
+  .el-button.is-disabled{
+    color: rgb(33, 91, 150);
+    cursor: default;
+  }
+
   .forgot-password {
     font-size: 12px;
+    color: rgb(29, 22, 129);
   }
 }
 .icon {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   margin-right: 20px;
+  cursor: pointer;
 }
 .dialog-footer {
   display: flex;
@@ -132,7 +185,8 @@ export default {
   }
 }
 .other {
+  display: flex;
+  align-items: center;
   color: #000000;
 }
-
 </style>
