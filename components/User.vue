@@ -89,6 +89,7 @@ export default {
     }
   },
   computed: {
+    // 表单验证规则
     rules() {
       const validatePass = (rule, value, callback) => {
         if (value === '') return callback(new Error('请再次输入密码'))
@@ -121,6 +122,7 @@ export default {
     }
   },
   methods: {
+    // 初始化数据
     initForm() {
       return {
         username: '',
@@ -129,16 +131,20 @@ export default {
         code: ''
       }
     },
+    // 打开弹框
     open() {
       this.visible = true
     },
+    // 关闭弹框
     close() {
       this.visible = false
     },
+    // 关闭弹框后清理数据
     closed() {
       this.isLogin = true
       this.$refs.form.resetFields()
     },
+    // 切换登陆与注册板块
     toggle() {
       this.isLogin = !this.isLogin
       this.$refs.form.resetFields()
@@ -176,6 +182,7 @@ export default {
   height: 24px;
   margin-right: 20px;
   cursor: pointer;
+  outline: none;
 }
 .dialog-footer {
   display: flex;
