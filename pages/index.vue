@@ -36,7 +36,9 @@ export default {
   // background-color: green;
 }
 .additional{
-  width: 200px;
+  width: 240px;
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow:0px 0 10px 0 rgba(255, 255, 255, 0.3);
   // background-color: red;
 }
 </style>
