@@ -50,8 +50,8 @@
     </el-form>
     <el-button v-if="isLogin" size="mini" type="text" class="forgot-password">忘记密码？</el-button>
     <span class="dialog-footer">
-      <el-button v-if="isLogin" round type="primary" @click="visible = false">登 陆</el-button>
-      <el-button v-else round type="primary" @click="visible = false">注 册</el-button>
+      <el-button v-if="isLogin" round type="primary" @click="showCaptcha('login')">登 陆</el-button>
+      <el-button v-else round type="primary" @click="showCaptcha('register')">注 册</el-button>
     </span>
     <span class="other">
       其他登陆方式：
@@ -82,9 +82,10 @@
 export default {
   data() {
     return {
-      visible: false,
+      visible: true,
       formLabelWidth: '120px',
       isLogin: true,
+      type: '',
       form: this.initForm()
     }
   },
@@ -121,6 +122,12 @@ export default {
       return rules
     }
   },
+  mounted() {
+    const TencentCaptcha = window.TencentCaptcha
+    this.instance = new TencentCaptcha('2057344292', res =>
+      this.slidingCaptcha(res)
+    )
+  },
   methods: {
     // 初始化数据
     initForm() {
@@ -148,6 +155,30 @@ export default {
     toggle() {
       this.isLogin = !this.isLogin
       this.$refs.form.resetFields()
+    },
+    slidingCaptcha(res) {
+      if (res.ret !== 0) return false
+      const params = {
+        ticket: res.ticket,
+        randstr: res.randstr
+      }
+
+      this.type === 'register'
+      ? this.register(params)
+      : this.login(params)
+    },
+    showCaptcha(type) {
+      this.type = type
+      this.instance.show()
+    },
+    login() {
+      // this.$axios.get('/users/getToken')
+    },
+    register(res) {
+      this.$axios.post('/users/register', {
+        ...res,
+        ...this.form
+      })
     }
   }
 }

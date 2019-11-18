@@ -1,3 +1,10 @@
+/*
+ * @Author: Aaron
+ * @Date: 2019-11-06 10:21:27
+ * @LastEditors: Aaron
+ * @LastEditTime: 2019-11-19 00:37:48
+ * @Description: file content
+ */
 export default {
   mode: 'universal',
   /*
@@ -15,7 +22,8 @@ export default {
       }
     ],
     script: [
-      { src: 'https://at.alicdn.com/t/font_1493814_2ej0kov2pmk.js' }
+      { src: 'https://at.alicdn.com/t/font_1493814_2ej0kov2pmk.js' },
+      { src: 'https://ssl.captcha.qq.com/TCaptcha.js' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -33,7 +41,10 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/element-ui'],
+  plugins: [
+    '@/plugins/element-ui',
+    '@/plugins/axios'
+  ],
   /*
    ** Nuxt.js dev-modules
    */
@@ -53,7 +64,27 @@ export default {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    prefix: '/api',
+    credentials: true,
+    proxy: true
+  },
+  /*
+   ** proxy configuration
+   ** See https://axios.nuxtjs.org/options
+   */
+  // proxy: {
+  //   '/api/': 'http://localhost:9090/'
+  // },
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:9090/',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/api/': ''
+      }
+    }
+  },
   /*
    ** Build configuration
    */
