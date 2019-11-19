@@ -13,7 +13,7 @@
           v-model="form.username"
           prefix-icon="el-icon-user"
           autocomplete="off"
-          placeholder="请输入邮箱"
+          placeholder="请输入账号（邮箱）"
         />
       </el-form-item>
       <el-form-item prop="password">
@@ -36,6 +36,14 @@
             placeholder="再次输入密码"
           />
         </el-form-item>
+        <el-form-item prop="name">
+          <el-input
+            v-model="form.name"
+            prefix-icon="el-icon-sugar"
+            autocomplete="off"
+            placeholder="请输入昵称"
+          />
+        </el-form-item>
         <el-form-item prop="code">
           <el-input
             v-model="form.code"
@@ -50,10 +58,10 @@
     </el-form>
     <el-button v-if="isLogin" size="mini" type="text" class="forgot-password">忘记密码？</el-button>
     <span class="dialog-footer">
-      <el-button v-if="isLogin" round type="primary" @click="showCaptcha('login')">登 陆</el-button>
-      <el-button v-else round type="primary" @click="showCaptcha('register')">注 册</el-button>
+      <el-button v-if="isLogin" round type="primary" :disabled="isNoLogin" @click="showCaptcha('login')">登 陆</el-button>
+      <el-button v-else round type="primary" :disabled="isNoRegister" @click="showCaptcha('register')">注 册</el-button>
     </span>
-    <span class="other">
+    <span v-if="isLogin" class="other">
       其他登陆方式：
       <el-tooltip class="item" effect="dark" content="微信" placement="top">
         <svg class="icon" aria-hidden="true">
@@ -71,7 +79,7 @@
         </svg>
       </el-tooltip>
       <el-tooltip class="item" effect="dark" content="GitHub" placement="top">
-        <svg class="icon" aria-hidden="true">
+        <svg class="icon" aria-hidden="true" @click="github">
           <use xlink:href="#icon-github2"></use>
         </svg>
       </el-tooltip>
@@ -113,6 +121,10 @@ export default {
           { required: true, message: '请再次输入密码', trigger: 'blur' },
           { validator: validatePass, trigger: 'blur' }
         ]
+        rules.name = [
+          { required: true, message: '请输入昵称', trigger: 'blur' },
+          { min: 3, max: 10, message: '昵称长度在 3 到 10 个字符', trigger: 'blur' }
+        ]
         rules.code = [
           { required: true, message: '请输邮箱验证码', trigger: 'blur' },
           { min: 6, message: '验证码不正确', trigger: 'blur' }
@@ -120,22 +132,33 @@ export default {
       }
 
       return rules
+    },
+    // 登陆按钮激活状态
+    isNoLogin() {
+      return !(this.form.username && this.form.password)
+    },
+    // 注册按钮激活状态
+    isNoRegister() {
+      const { username, againPassword, password, code, name } = this.form
+      return !(username && againPassword && password && code && name)
     }
   },
   mounted() {
+    // 初始化腾讯验证
     const TencentCaptcha = window.TencentCaptcha
     this.instance = new TencentCaptcha('2057344292', res =>
       this.slidingCaptcha(res)
     )
   },
   methods: {
-    // 初始化数据
+    // 初始化表单数据
     initForm() {
       return {
         username: '',
         password: '',
         againPassword: '',
-        code: ''
+        code: '',
+        name: ''
       }
     },
     // 打开弹框
@@ -164,21 +187,31 @@ export default {
       }
 
       this.type === 'register'
-      ? this.register(params)
-      : this.login(params)
+      ? this.register({ ...params, ...this.form })
+      : this.login({ ...params, username: this.form.username, password: this.form.password })
     },
     showCaptcha(type) {
-      this.type = type
-      this.instance.show()
-    },
-    login() {
-      // this.$axios.get('/users/getToken')
-    },
-    register(res) {
-      this.$axios.post('/users/register', {
-        ...res,
-        ...this.form
+      this.$refs.form.validate(valid => {
+        if (!valid) return
+
+        this.type = type
+        this.instance.show()
       })
+    },
+    async login(params) {
+      await this.$axios.get('/users/login')
+      this.$message.success('登陆成功')
+    },
+    async register(params) {
+      await this.$axios.post('/users/register', params)
+      this.$message.success('注册成功')
+    },
+    github() {
+      const clientId = 'd91167bb6099a92af885'
+      const authorizeUri = 'https://github.com/login/oauth/authorize'
+      const redirectUri = 'http://localhost:9090/users/github'
+
+      window.location.href = `${authorizeUri}?client_id=${clientId}&redirect_uri=${redirectUri}`;
     }
   }
 }
@@ -207,6 +240,8 @@ export default {
     font-size: 12px;
     color: rgb(29, 22, 129);
   }
+
+
 }
 .icon {
   width: 24px;
@@ -221,10 +256,18 @@ export default {
   .el-button {
     flex: 1
   }
+
+  .el-button.is-disabled{
+    background: #C0C4CC;
+    color: #666;
+    cursor: default;
+    border-color: #C0C4CC;
+  }
 }
 .other {
   display: flex;
   align-items: center;
   color: #000000;
+  padding-top: 22px;
 }
 </style>

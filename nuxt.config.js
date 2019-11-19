@@ -2,7 +2,7 @@
  * @Author: Aaron
  * @Date: 2019-11-06 10:21:27
  * @LastEditors: Aaron
- * @LastEditTime: 2019-11-19 00:37:48
+ * @LastEditTime: 2019-11-19 23:41:43
  * @Description: file content
  */
 export default {
@@ -22,12 +22,12 @@ export default {
       }
     ],
     script: [
-      { src: 'https://at.alicdn.com/t/font_1493814_2ej0kov2pmk.js' },
+      { src: 'https://at.alicdn.com/t/font_1493814_1ztw9rq94k3.js' },
       { src: 'https://ssl.captcha.qq.com/TCaptcha.js' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-      { rel: 'stylesheet', href: 'https://at.alicdn.com/t/font_1493814_wsecoxvhgyf.css' }
+      { rel: 'stylesheet', href: 'https://at.alicdn.com/t/font_1493814_1ztw9rq94k3.css' }
     ]
   },
   /*
@@ -43,7 +43,10 @@ export default {
    */
   plugins: [
     '@/plugins/element-ui',
-    '@/plugins/axios'
+    {
+      src: '@/plugins/axios',
+      ssr: false
+    }
   ],
   /*
    ** Nuxt.js dev-modules
